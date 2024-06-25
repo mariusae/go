@@ -51,6 +51,7 @@ var args []string
 var win *acme.Win
 var needrun = make(chan bool, 1)
 var recursive = flag.Bool("r", false, "watch all subdirectories recursively")
+var nowatch = flag.Bool("n", false, "don't watch directories")
 
 func usage() {
 	fmt.Fprintf(os.Stderr, "usage: Watch [-r] cmd args...\n")
@@ -85,6 +86,10 @@ func main() {
 	needrun <- true
 	go events()
 	go runner(pwd)
+
+	if *nowatch {
+		<-make(chan bool);
+	}
 
 	r, err := acme.Log()
 	if err != nil {
